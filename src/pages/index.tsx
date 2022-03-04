@@ -1,40 +1,30 @@
+import { useCallback } from 'react';
 import styled from '@emotion/styled';
 import { motion } from 'framer-motion';
+import {
+    signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider,
+} from 'firebase/auth';
+import { auth } from '@utils/firebase';
 
-import axios from 'axios';
+function Home() {
+    const googleLogin = useCallback(async () => {
+        const provider = new GoogleAuthProvider();
 
-function Home({ userAdress }: any) {
+        const data = await signInWithPopup(auth, provider);
+        console.log(data);
+    }, []);
     return (
         <Container>
             <Section>
-                <Animation
-                    animate={{ x: [-100, 0] }}
-                    transition={{ ease: 'easeOut', duration: 1 }}
+                <Button
+                    type="button"
+                    onClick={googleLogin}
                 >
-                    {userAdress}
-                </Animation>
-
-                <motion.circle
-                    cx={500}
-                    animate={{ cx: [null, 100, 200] }}
-                    transition={{ duration: 3, times: [0, 0.2, 1] }}
-                >
-                    {/* {`${userInfo}`} */}
-                </motion.circle>
+                    구글 로그인
+                </Button>
             </Section>
         </Container>
     );
-}
-
-export async function getServerSideProps() {
-    const { data } = await axios.get('https://geolocation-db.com/json/');
-    const userAdress = data.IPv4;
-
-    return {
-        props: {
-            userAdress,
-        },
-    };
 }
 
 const Container = styled.section`
@@ -46,8 +36,6 @@ const Section = styled.section`
     margin-top: 60px;
 `;
 
-const Animation = styled(motion.div)`
-    font-size: 14px;
-`;
+const Button = styled.button``;
 
 export default Home;
