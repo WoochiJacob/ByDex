@@ -9,3 +9,8 @@ export const IsLoading = atom<boolean>({
     key: 'IsLoading',
     default: false,
 });
+
+export const UserInfo = atom<any>({
+    key: 'UserInfo',
+    default: null,
+});
