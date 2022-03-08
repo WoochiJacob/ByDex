@@ -3,7 +3,6 @@ import { signOut } from 'firebase/auth';
 import { auth } from '@utils/firebase';
 import Link from 'next/link';
 import styled from '@emotion/styled';
-import GDALogo from '@img/logo.png';
 import { IsLogin } from '@recoil/auth/auth';
 import { useRecoilValue } from 'recoil';
 
@@ -24,18 +23,8 @@ function Header() {
                         href="/"
                         passHref
                     >
-                        <Logo
-                            src={GDALogo.src}
-                            alt="logo"
-                        />
+                        BY DEX
                     </Link>
-
-                    <MenuGroup>
-                        <Menu>Company</Menu>
-                        <Menu>Contents</Menu>
-                        <Menu>About</Menu>
-                        <Menu>Media</Menu>
-                    </MenuGroup>
                 </Navigarion>
                 <UserInfo>
                     <MenuGroup>
