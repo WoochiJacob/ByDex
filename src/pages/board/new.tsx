@@ -1,22 +1,27 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import moment from 'moment';
+import 'moment/locale/ko';
+import { useRecoilValue } from 'recoil';
 import { useRouter } from 'next/router';
 import { useForm, Controller } from 'react-hook-form';
 import styled from '@emotion/styled';
 import { Store } from 'react-notifications-component';
-import { FormData } from '@utils/formData';
+import { FormData, IFormData } from '@utils/formData';
+import { UserInfo, IsLogin } from '@recoil/auth/auth';
 
 import Input from '@components/ui/Input';
 import Select from '@components/ui/Select';
 import TextArea from '@components/ui/TextArea';
 import Radio from '@components/ui/Radio';
+import Login from '@components/layout/login';
 
 import {
-    collection, addDoc, getDocs,
+    collection, addDoc, doc, setDoc,
 } from 'firebase/firestore';
 import { DB } from '@utils/firebase';
 
 type BoardData = {
-    category: string;
+    category: string | undefined;
     title: string;
     price: number;
     phone: number;
@@ -28,44 +33,74 @@ function BoardNew() {
     const formData = FormData;
     const router = useRouter();
     const [disabled, setDisabled] = useState(false);
+    const userInfo = useRecoilValue(UserInfo);
+    const isLogin = useRecoilValue(IsLogin);
     const {
-        register, control, handleSubmit, formState: { errors },
+        register, control, handleSubmit, formState: { errors, isValid },
     } = useForm<BoardData>({
         mode: 'onChange',
     });
 
     const onSubmit = async (data: BoardData) => {
         setDisabled(true);
+
+        const boardData = {
+            ...data,
+            user: userInfo,
+            comment: [],
+        };
+
         try {
-            const querySnapshot = await addDoc(collection(DB, 'board'), data);
+            const querySnapshot = await addDoc(collection(DB, 'board'), boardData);
 
             if (querySnapshot.id) {
-                console.log(querySnapshot.id);
+                await setDoc(doc(DB, 'board', querySnapshot.id), {
+                    ...boardData,
+                    id: querySnapshot.id,
+                    created: moment().format('LLL'),
+                });
 
-                console.log('fasdfadws');
-                // router.push('/');
+                Store.addNotification({
+                    title: '완료',
+                    message: '게시물 작성이 완료 되었습니다.',
+                    type: 'default',
+                    insert: 'top',
+                    container: 'top-left',
+                    animationIn: ['animate__animated', 'animate__fadeIn'],
+                    animationOut: ['animate__animated', 'animate__fadeOut'],
+                    dismiss: {
+                        duration: 5000,
+                    },
+                });
+
+                router.push('/');
                 setDisabled(false);
             }
         } catch (error) {
-            console.log(error);
+            Store.addNotification({
+                title: '오류',
+                message: '오류가 발생하였습니다.',
+                type: 'danger',
+                insert: 'top',
+                container: 'top-left',
+                animationIn: ['animate__animated', 'animate__fadeIn'],
+                animationOut: ['animate__animated', 'animate__fadeOut'],
+                dismiss: {
+                    duration: 5000,
+                },
+            });
         }
     };
 
-    const test = async () => {
-        const querySnapshotttttt = await getDocs(collection(DB, 'board'));
-
-        console.log(querySnapshotttttt);
-    };
-
-    useEffect(() => {
-        test();
-    }, []);
+    if (!isLogin) {
+        return <Login />;
+    }
 
     return (
         <Container>
             <Title>상품 등록</Title>
             <Form onSubmit={handleSubmit(onSubmit)}>
-                {formData.map((data) => (
+                {formData.map((data: IFormData) => (
                     <FormBox key={data.label}>
                         <InputTitle>{data.title}</InputTitle>
 
@@ -120,13 +155,16 @@ function BoardNew() {
                                 )}
                             />
                         )}
+                        <Error>
+                            {errors[data.label] ? `${data.title}을 입력해 주세요.` : ''}
+                        </Error>
                     </FormBox>
                 ))}
 
                 <Submit
                     type="submit"
                     value="글쓰기"
-                    disabled={disabled}
+                    disabled={disabled || !isValid}
                 />
             </Form>
         </Container>

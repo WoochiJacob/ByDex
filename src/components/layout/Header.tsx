@@ -23,7 +23,7 @@ function Header() {
                         href="/"
                         passHref
                     >
-                        BY DEX
+                        <Logo>BY DEX</Logo>
                     </Link>
                 </Navigarion>
                 <UserInfo>
@@ -64,8 +64,9 @@ const HeaderContain = styled.header`
     left: 0;
     top: 0;
     z-index: 9999;
-    box-shadow: rgb(51 61 72 / 10%) 0px 4px 12px 0px;
+    box-shadow: rgb(51 61 72 / 20%) -2px -6px 12px 0px;
     background-color: #fff;
+    border-bottom: 1px solid #C8CDD2;
 `;
 
 const Container = styled.header`
@@ -76,9 +77,10 @@ const Container = styled.header`
     justify-content: space-between;
 `;
 
-const Logo = styled('img')`
-    width: 100px;
-    margin-right: 40px;
+const Logo = styled.div`
+    font-size: 24px;
+    font-weight: bold;
+    color: rgb(0, 5, 40);
     cursor: pointer;
 `;
 

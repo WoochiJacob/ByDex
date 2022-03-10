@@ -36,6 +36,7 @@ const TextareaStyled = styled.textarea<{textHeight: number}>`
     border-radius: 8px;
     height: ${(props) => `${props.textHeight}px`};
     padding: 20px 15px;
+    font-family: "Noto Sans KR";
 
     &:focus, &:active, &:focus-visible {
         border: 1px solid #e6e6e6;

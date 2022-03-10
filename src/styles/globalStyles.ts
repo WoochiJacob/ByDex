@@ -47,6 +47,8 @@ const globalStyles = css`
     font-family: "Noto Sans KR", sans-serif;
     font-weight: 400;
     font-size: 14px;
+    background-color: rgb(250, 251, 252);
+    color: rgb(0, 5, 40);
   }
 
   #__next {
@@ -59,6 +61,7 @@ const globalStyles = css`
   :after,
   :before {
     box-sizing: border-box;
+    color: rgb(0, 5, 40);
   }
 
   a:visited,

@@ -1,32 +1,43 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
+import { useRouter } from 'next/router';
 import { useRecoilValue } from 'recoil';
 import {
     IsLogin,
 } from '@recoil/auth/auth';
 
 import Login from '@components/layout/login';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { DB } from '@utils/firebase';
 
 function Home() {
     const isLogin = useRecoilValue(IsLogin);
+    const [isBoardLoading, setIsBoardLoading] = useState(true);
+    const [boardList, setBoardList] = useState<any>(null);
+    const router = useRouter();
 
-    const test = async () => {
-        // try {
-        //     const querySnapshot = await addDoc(collection(DB, 'board'), {
-        //         title: '제목',
-        //         contents: 'ddd',
-        //         날짜: 'ddd',
-        //     });
-        // } catch (error) {
-        //     console.log(error);
-        // }
+    const getBoard = async () => {
+        try {
+            const { docs } = await getDocs(collection(DB, 'board'));
+            const getList = docs.map((doc) => doc.data());
+            setBoardList(getList.length ? getList : null);
+            setIsBoardLoading(false);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const showBoardDetail = (id: string) => {
+        router.push(`/board/detail/${id}`);
+    };
+
+    const newBoard = () => {
+        router.push('/board/new');
     };
 
     useEffect(() => {
-        test();
-    });
+        getBoard();
+    }, []);
 
     if (!isLogin) {
         return <Login />;
@@ -35,13 +46,65 @@ function Home() {
     return (
         <Container>
             <Section>
-                <Title>게시판</Title>
+                <TitleContain>
+                    <Title>게시판</Title>
+                    <NewBoard onClick={newBoard}>글쓰기</NewBoard>
+                </TitleContain>
+
                 <BoardGroup>
-                    <BoardItems>fksdafjkl;asdjf;</BoardItems>
-                    <BoardItems>fksdafjkl;asdjf;</BoardItems>
-                    <BoardItems>fksdafjkl;asdjf;</BoardItems>
-                    <BoardItems>fksdafjkl;asdjf;</BoardItems>
-                    <BoardItems>fksdafjkl;asdjf;</BoardItems>
+                    <BoardItems header>
+                        <BoardHeader width={10}>
+                            구분
+                        </BoardHeader>
+                        <BoardHeader width={45}>
+                            제목
+                        </BoardHeader>
+                        <BoardHeader width={15}>
+                            판매가격
+                        </BoardHeader>
+                        <BoardHeader width={15}>
+                            작성자
+                        </BoardHeader>
+                        <BoardHeader width={15}>
+                            작성일
+                        </BoardHeader>
+                    </BoardItems>
+                    {boardList && boardList.map((board: any) => (
+                        <BoardItems
+                            key={board.id}
+                            onClick={() => showBoardDetail(board.id)}
+                        >
+                            <BoardBody width={10}>
+                                {board.category}
+                            </BoardBody>
+                            <BoardBody width={45}>
+                                {board.title}
+                            </BoardBody>
+                            <BoardBody width={15}>
+                                {Number(board.price).toLocaleString('ko-KR')}
+                                원
+                            </BoardBody>
+                            <BoardBody width={15}>
+                                {board.user.displayName}
+                            </BoardBody>
+                            <BoardBody width={15}>
+                                {board.created}
+                            </BoardBody>
+                        </BoardItems>
+                    ))}
+
+                    {(!boardList && isBoardLoading) && (
+                        <BoardEmpty>
+                            게시글 불러오는중..
+                        </BoardEmpty>
+                    )}
+
+                    {(!boardList && !isBoardLoading) && (
+                        <BoardEmpty>
+                            게시물이 없습니다.
+                        </BoardEmpty>
+                    )}
+
                 </BoardGroup>
             </Section>
         </Container>
@@ -57,24 +120,77 @@ const Section = styled.section`
     margin-top: 60px;
 `;
 
-const Title = styled.div``;
+const TitleContain = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 38px;
+`;
+
+const Title = styled.div`
+    font-size: 16px;
+    font-weight: bold;
+`;
+
+const NewBoard = styled.div`
+    width: 100px;
+    height: 38px;
+    background-color: rgb(0, 5, 40);
+    border-radius: 8px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+`;
 
 const BoardGroup = styled.div`
     margin: 20px 0;
+    box-shadow: rgb(0 8 50 / 10%) 0px 4px 16px 0px, rgb(0 0 0 / 5%) 0px -3px 0px 0px inset;
+    border: 1px solid rgb(220, 223, 227);
+    border-radius: 8px;
 `;
 
-const BoardItems = styled.div`
-    padding: 20px 15px;
-    border-top: 1px solid #e6e6e6;
-    cursor: pointer;
+const BoardItems = styled.div<{header ?: boolean}>`
+    /* border-top: 1px solid #C8CDD2; */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    background-color: ${(props) => (props.header ? '#eee' : '#fff')};
     
+    &:last-of-type {
+        border-bottom: 1px solid #C8CDD2;
+    }
+
+    cursor: pointer;
+
     &:hover {
         background-color: #eee ;
     }
+`;
 
-    &:last-of-type {
-        border-bottom: 1px solid #e6e6e6;
-    }
+const BoardHeader = styled.div<{width: number}>`
+    font-size: 14px;
+    font-weight: bold;
+    flex-basis: ${(props) => (`${props.width}%`)};
+`;
+
+const BoardBody = styled.div<{width: number}>`
+    font-size: 14px;
+
+    flex-basis: ${(props) => (`${props.width}%`)};
+`;
+
+const BoardEmpty = styled.div`
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+    border-top: 1px solid #C8CDD2;
+    border-bottom: 1px solid #C8CDD2;
 `;
 
 export default Home;
