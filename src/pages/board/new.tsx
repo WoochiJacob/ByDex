@@ -21,7 +21,7 @@ import {
 import { DB } from '@utils/firebase';
 
 type BoardData = {
-    category: string | undefined;
+    category: string;
     title: string;
     price: number;
     phone: number;
@@ -36,7 +36,7 @@ function BoardNew() {
     const userInfo = useRecoilValue(UserInfo);
     const isLogin = useRecoilValue(IsLogin);
     const {
-        register, control, handleSubmit, formState: { errors, isValid },
+        register, control, handleSubmit, formState: { isValid },
     } = useForm<BoardData>({
         mode: 'onChange',
     });
@@ -155,9 +155,6 @@ function BoardNew() {
                                 )}
                             />
                         )}
-                        <Error>
-                            {errors[data.label] ? `${data.title}을 입력해 주세요.` : ''}
-                        </Error>
                     </FormBox>
                 ))}
 
@@ -187,12 +184,6 @@ const InputTitle = styled.div`
     font-size: 16px;
     font-weight: bold;
     margin-bottom: 10px;
-`;
-
-const Error = styled.div`
-    font-size: 12px;
-    color: #f56c6c;
-    margin-bottom: 20px;
 `;
 
 const Form = styled.form``;

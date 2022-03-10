@@ -9,6 +9,7 @@ import {
 import Login from '@components/layout/login';
 import { collection, getDocs } from 'firebase/firestore';
 import { DB } from '@utils/firebase';
+import { Store } from 'react-notifications-component';
 
 function Home() {
     const isLogin = useRecoilValue(IsLogin);
@@ -23,7 +24,18 @@ function Home() {
             setBoardList(getList.length ? getList : null);
             setIsBoardLoading(false);
         } catch (error) {
-            console.log(error);
+            Store.addNotification({
+                title: '오류',
+                message: '오류가 발생하였습니다.',
+                type: 'danger',
+                insert: 'top',
+                container: 'top-left',
+                animationIn: ['animate__animated', 'animate__fadeIn'],
+                animationOut: ['animate__animated', 'animate__fadeOut'],
+                dismiss: {
+                    duration: 5000,
+                },
+            });
         }
     };
 

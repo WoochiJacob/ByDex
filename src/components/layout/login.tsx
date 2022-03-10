@@ -45,6 +45,7 @@ function Login() {
                 },
             });
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const getLoginProvider = useCallback((type: string) => {

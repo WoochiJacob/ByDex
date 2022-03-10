@@ -64,6 +64,7 @@ module.exports = {
         '@typescript-eslint/explicit-module-boundary-types': OFF,
         '@typescript-eslint/ban-ts-ignore': OFF,
         '@typescript-eslint/no-var-requires': OFF,
+        '@typescript-eslint/no-explicit-any': OFF,
 
     },
 };

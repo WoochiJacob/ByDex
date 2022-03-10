@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import styled from '@emotion/styled';
 import { useRouter } from 'next/router';
 import { useRecoilValue } from 'recoil';
@@ -20,7 +20,7 @@ type CommnetData = {
 
 function BoardDetail() {
     const router = useRouter();
-    const boardId = router.query.id;
+    const boardId = String(router.query.id);
     const [isBoardLoading, setIsBoardLoading] = useState(true);
     const [disabled, setDisabled] = useState(false);
     const userInfo = useRecoilValue(UserInfo);
@@ -81,7 +81,7 @@ function BoardDetail() {
         }
     };
 
-    const getBoard = async (action: boolean) => {
+    const getBoard = useCallback(async (action: boolean) => {
         try {
             const docRef = doc(DB, 'board', boardId);
             const docSnap = await getDoc(docRef);
@@ -124,13 +124,13 @@ function BoardDetail() {
                 },
             });
         }
-    };
+    }, [boardId, router]);
 
     const nl2br = (str: string) => str.replace(/\n/g, '<br />');
 
     useEffect(() => {
         getBoard(true);
-    }, []);
+    }, [getBoard]);
 
     if (!isLogin) {
         return <Login />;
