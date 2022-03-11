@@ -30,6 +30,7 @@ function BoardDetail() {
     const [boardList, setBoardList] = useState<any>(null);
     const [deleteDisable, setDeleteDisable] = useState<boolean>(false);
     const [isMine, setMine] = useState<string>('');
+    const [showTooltip, setShowTooltip] = useState<boolean>(false);
     const {
         register, handleSubmit, setValue, formState: { isValid },
     } = useForm<CommnetData>({
@@ -74,6 +75,11 @@ function BoardDetail() {
                 },
             });
         }
+    };
+
+    const showPhoneNumber = (action: string) => {
+        const isShow = !!(action === 'over');
+        setShowTooltip(isShow);
     };
 
     const onSubmit = async (data: CommnetData) => {
@@ -250,7 +256,13 @@ function BoardDetail() {
                             <Profile src={boardList.user.photoURL} />
                             <UserName>{boardList.user.displayName}</UserName>
                             <UserMail>{boardList.user.email}</UserMail>
-                            <UserNumberCheck>연락처 확인하기</UserNumberCheck>
+                            <UserNumberCheck
+                                onMouseOver={() => showPhoneNumber('over')}
+                                onMouseLeave={() => showPhoneNumber('leave')}
+                            >
+                                연락처 확인하기
+                                {showTooltip && <UserToolTip>{boardList.phone}</UserToolTip>}
+                            </UserNumberCheck>
                         </UserProfileDetailBox>
                     </UserProfile>
                 </BoardBox>
@@ -362,6 +374,7 @@ const UserNumberCheck = styled.div`
     font-size: 14px;
     margin-top: 20px;
     cursor: pointer;
+    position: relative;
 `;
 
 const UserProfile = styled.div`
@@ -534,6 +547,22 @@ const DeleteButton = styled.button`
 const ModifyButton = styled.div`
     display: flex;
     align-items: center;
+`;
+
+const UserToolTip = styled.div`
+    position: absolute;
+    background-color: #fff;
+    color: rgb(0, 5, 40);
+    border: 1px solid #C8CDD2;
+    width: 200px;
+    border-radius: 8px;
+    height: 30px;
+    top: -40px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 `;
 
 export default BoardDetail;

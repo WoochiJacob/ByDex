@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import moment from 'moment';
 import 'moment/locale/ko';
 import { useRecoilValue } from 'recoil';
@@ -16,7 +16,7 @@ import Radio from '@components/ui/Radio';
 import Login from '@components/layout/login';
 
 import {
-    collection, addDoc, doc, setDoc,
+    collection, addDoc, doc, setDoc, getDoc,
 } from 'firebase/firestore';
 import { DB } from '@utils/firebase';
 
@@ -35,6 +35,12 @@ function BoardNew() {
     const [disabled, setDisabled] = useState(false);
     const userInfo = useRecoilValue(UserInfo);
     const isLogin = useRecoilValue(IsLogin);
+    const [isAdmin, setAdmin] = useState<string>('');
+    const userItems = [{
+        id: 1,
+        value: '삽니다.',
+        name: '삽니다.',
+    }];
     const {
         register, control, handleSubmit, formState: { isValid },
     } = useForm<BoardData>({
@@ -92,6 +98,24 @@ function BoardNew() {
         }
     };
 
+    const getAdminUser = async () => {
+        const docRef = doc(DB, 'admin', 'adminList');
+        const docSnap = await getDoc(docRef);
+        const adminData = await docSnap.data();
+
+        if (adminData && userInfo) {
+            const checked = adminData.adminUser.includes(userInfo.uid);
+            setAdmin(checked);
+        }
+    };
+
+    useEffect(() => {
+        if (userInfo) {
+            getAdminUser();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userInfo]);
+
     if (!isLogin) {
         return <Login />;
     }
@@ -121,7 +145,7 @@ function BoardNew() {
                                 label={data.label}
                                 required={data.required}
                                 placeholder={data.placeholder}
-                                options={data.items}
+                                options={isAdmin ? data.items : userItems}
                             />
                         )}
 

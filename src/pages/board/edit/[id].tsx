@@ -7,7 +7,7 @@ import { useForm, Controller } from 'react-hook-form';
 import styled from '@emotion/styled';
 import { Store } from 'react-notifications-component';
 import { FormData, IFormData } from '@utils/formData';
-import { IsLogin } from '@recoil/auth/auth';
+import { UserInfo, IsLogin } from '@recoil/auth/auth';
 
 import Input from '@components/ui/Input';
 import Select from '@components/ui/Select';
@@ -34,8 +34,15 @@ function BoardNew() {
     const router = useRouter();
     const [disabled, setDisabled] = useState(false);
     const isLogin = useRecoilValue(IsLogin);
+    const userInfo = useRecoilValue(UserInfo);
     const boardId = String(router.query.id);
     const [boardList, setBoardList] = useState<any>(null);
+    const [isAdmin, setAdmin] = useState<string>('');
+    const userItems = [{
+        id: 1,
+        value: '삽니다.',
+        name: '삽니다.',
+    }];
     const {
         register, control, handleSubmit, setValue, formState: { isValid },
     } = useForm<BoardData>({
@@ -134,6 +141,24 @@ function BoardNew() {
         }
     }, [boardId, router, setValue]);
 
+    const getAdminUser = async () => {
+        const docRef = doc(DB, 'admin', 'adminList');
+        const docSnap = await getDoc(docRef);
+        const adminData = await docSnap.data();
+
+        if (adminData && userInfo) {
+            const checked = adminData.adminUser.includes(userInfo.uid);
+            setAdmin(checked);
+        }
+    };
+
+    useEffect(() => {
+        if (userInfo) {
+            getAdminUser();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userInfo]);
+
     useEffect(() => {
         getBoard();
     }, [getBoard]);
@@ -167,7 +192,7 @@ function BoardNew() {
                                 label={data.label}
                                 required={data.required}
                                 placeholder={data.placeholder}
-                                options={data.items}
+                                options={isAdmin ? data.items : userItems}
                             />
                         )}
 
