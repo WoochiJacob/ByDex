@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import moment from 'moment';
 import 'moment/locale/ko';
 import { useRecoilValue } from 'recoil';
@@ -7,7 +7,7 @@ import { useForm, Controller } from 'react-hook-form';
 import styled from '@emotion/styled';
 import { Store } from 'react-notifications-component';
 import { FormData, IFormData } from '@utils/formData';
-import { UserInfo, IsLogin } from '@recoil/auth/auth';
+import { IsLogin } from '@recoil/auth/auth';
 
 import Input from '@components/ui/Input';
 import Select from '@components/ui/Select';
@@ -16,12 +16,12 @@ import Radio from '@components/ui/Radio';
 import Login from '@components/layout/login';
 
 import {
-    collection, addDoc, doc, setDoc,
+    doc, setDoc, getDoc,
 } from 'firebase/firestore';
 import { DB } from '@utils/firebase';
 
 type BoardData = {
-    category: string | undefined;
+    category: string;
     title: string;
     price: number;
     phone: number;
@@ -33,10 +33,11 @@ function BoardNew() {
     const formData = FormData;
     const router = useRouter();
     const [disabled, setDisabled] = useState(false);
-    const userInfo = useRecoilValue(UserInfo);
     const isLogin = useRecoilValue(IsLogin);
+    const boardId = String(router.query.id);
+    const [boardList, setBoardList] = useState<any>(null);
     const {
-        register, control, handleSubmit, formState: { isValid },
+        register, control, handleSubmit, setValue, formState: { isValid },
     } = useForm<BoardData>({
         mode: 'onChange',
     });
@@ -45,37 +46,31 @@ function BoardNew() {
         setDisabled(true);
 
         const boardData = {
+            ...boardList,
             ...data,
-            user: userInfo,
-            comment: [],
         };
 
         try {
-            const querySnapshot = await addDoc(collection(DB, 'board'), boardData);
+            await setDoc(doc(DB, 'board', boardId), {
+                ...boardData,
+                created: moment().format('LLL'),
+            });
 
-            if (querySnapshot.id) {
-                await setDoc(doc(DB, 'board', querySnapshot.id), {
-                    ...boardData,
-                    id: querySnapshot.id,
-                    created: moment().format('LLL'),
-                });
+            Store.addNotification({
+                title: '완료',
+                message: '게시물 수정이 완료 되었습니다.',
+                type: 'default',
+                insert: 'top',
+                container: 'top-left',
+                animationIn: ['animate__animated', 'animate__fadeIn'],
+                animationOut: ['animate__animated', 'animate__fadeOut'],
+                dismiss: {
+                    duration: 5000,
+                },
+            });
 
-                Store.addNotification({
-                    title: '완료',
-                    message: '게시물 작성이 완료 되었습니다.',
-                    type: 'default',
-                    insert: 'top',
-                    container: 'top-left',
-                    animationIn: ['animate__animated', 'animate__fadeIn'],
-                    animationOut: ['animate__animated', 'animate__fadeOut'],
-                    dismiss: {
-                        duration: 5000,
-                    },
-                });
-
-                router.push('/');
-                setDisabled(false);
-            }
+            router.push('/');
+            setDisabled(false);
         } catch (error) {
             Store.addNotification({
                 title: '오류',
@@ -91,6 +86,57 @@ function BoardNew() {
             });
         }
     };
+
+    const getBoard = useCallback(async () => {
+        try {
+            const docRef = doc(DB, 'board', boardId);
+            const docSnap = await getDoc(docRef);
+            const getList = docSnap.data() || null;
+
+            if (!getList) {
+                router.push('/');
+                Store.addNotification({
+                    title: '오류',
+                    message: '게시물 정보가 없습니다.',
+                    type: 'danger',
+                    insert: 'top',
+                    container: 'top-left',
+                    animationIn: ['animate__animated', 'animate__fadeIn'],
+                    animationOut: ['animate__animated', 'animate__fadeOut'],
+                    dismiss: {
+                        duration: 5000,
+                    },
+                });
+
+                return;
+            }
+            setValue('category', getList.category);
+            setValue('title', getList.title);
+            setValue('price', getList.price);
+            setValue('phone', getList.phone);
+            setValue('coin', getList.coin);
+            setValue('contents', getList.contents);
+
+            setBoardList(getList);
+        } catch (error) {
+            Store.addNotification({
+                title: '오류',
+                message: '오류가 발생하였습니다.',
+                type: 'danger',
+                insert: 'top',
+                container: 'top-left',
+                animationIn: ['animate__animated', 'animate__fadeIn'],
+                animationOut: ['animate__animated', 'animate__fadeOut'],
+                dismiss: {
+                    duration: 5000,
+                },
+            });
+        }
+    }, [boardId, router, setValue]);
+
+    useEffect(() => {
+        getBoard();
+    }, [getBoard]);
 
     if (!isLogin) {
         return <Login />;

@@ -1,11 +1,13 @@
-import { useEffect, useState, useCallback } from 'react';
+import {
+    useEffect, useState, useCallback,
+} from 'react';
 import styled from '@emotion/styled';
 import { useRouter } from 'next/router';
 import { useRecoilValue } from 'recoil';
 import moment from 'moment';
 import 'moment/locale/ko';
 import {
-    getDoc, doc, setDoc,
+    getDoc, doc, setDoc, deleteDoc,
 } from 'firebase/firestore';
 import { DB } from '@utils/firebase';
 import TextArea from '@components/ui/TextArea';
@@ -26,11 +28,53 @@ function BoardDetail() {
     const userInfo = useRecoilValue(UserInfo);
     const isLogin = useRecoilValue(IsLogin);
     const [boardList, setBoardList] = useState<any>(null);
+    const [deleteDisable, setDeleteDisable] = useState<boolean>(false);
+    const [isMine, setMine] = useState<string>('');
     const {
         register, handleSubmit, setValue, formState: { isValid },
     } = useForm<CommnetData>({
         mode: 'onChange',
     });
+
+    const boardModify = async (action: string) => {
+        if (action === 'modify') {
+            router.push(`/board/edit/${boardId}`);
+            return;
+        }
+        setDeleteDisable(true);
+        try {
+            await deleteDoc(doc(DB, 'board', boardList.id));
+
+            router.push('/');
+            setDeleteDisable(false);
+
+            Store.addNotification({
+                title: '완료',
+                message: '게시물이 삭제되었습니다.',
+                type: 'default',
+                insert: 'top',
+                container: 'top-left',
+                animationIn: ['animate__animated', 'animate__fadeIn'],
+                animationOut: ['animate__animated', 'animate__fadeOut'],
+                dismiss: {
+                    duration: 5000,
+                },
+            });
+        } catch (error) {
+            Store.addNotification({
+                title: '오류',
+                message: '오류가 발생하였습니다.',
+                type: 'danger',
+                insert: 'top',
+                container: 'top-left',
+                animationIn: ['animate__animated', 'animate__fadeIn'],
+                animationOut: ['animate__animated', 'animate__fadeOut'],
+                dismiss: {
+                    duration: 5000,
+                },
+            });
+        }
+    };
 
     const onSubmit = async (data: CommnetData) => {
         setDisabled(true);
@@ -132,6 +176,12 @@ function BoardDetail() {
         getBoard(true);
     }, [getBoard]);
 
+    useEffect(() => {
+        if (userInfo) {
+            setMine(userInfo.uid);
+        }
+    }, [userInfo]);
+
     if (!isLogin) {
         return <Login />;
     }
@@ -148,6 +198,23 @@ function BoardDetail() {
         <Container>
             <BoradTitle>
                 {boardList.title}
+                {isMine === boardList.user.uid && (
+                    <ModifyButton>
+                        <DeleteButton
+                            onClick={() => boardModify('modify')}
+                        >
+                            게시물 수정
+                        </DeleteButton>
+
+                        <DeleteButton
+                            onClick={() => boardModify('delete')}
+                            disabled={deleteDisable}
+                        >
+                            게시물 삭제
+                        </DeleteButton>
+                    </ModifyButton>
+                )}
+
             </BoradTitle>
             <BoradCategory>
                 {boardList.category}
@@ -241,6 +308,9 @@ const Container = styled.section`
 const BoradTitle = styled.div`
     font-size: 24px;
     font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 `;
 
 const BoradCategory = styled.div`
@@ -435,6 +505,35 @@ const CommentTime = styled.div`
     font-size: 12px;
     color: #C8CDD2;
     margin-top: 10px;
+`;
+
+const DeleteButton = styled.button`
+    border: 0;
+    background-color: rgb(0, 5, 40);
+    height: 38px;
+    width: 100px;
+    border-radius: 8px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-left: 20px;
+
+    &:first-of-type {
+        background-color: #fff;
+        border: 1px solid #C8CDD2;
+        color: rgb(0, 5, 40)
+    }
+
+    &:disabled {
+        background-color: #C8CDD2;
+    }
+`;
+
+const ModifyButton = styled.div`
+    display: flex;
+    align-items: center;
 `;
 
 export default BoardDetail;

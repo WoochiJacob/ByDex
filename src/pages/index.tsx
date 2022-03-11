@@ -7,22 +7,80 @@ import {
 } from '@recoil/auth/auth';
 
 import Login from '@components/layout/login';
-import { collection, getDocs } from 'firebase/firestore';
+import {
+    collection, getDocs, query, orderBy, startAfter, limit, endAt, limitToLast,
+} from 'firebase/firestore';
 import { DB } from '@utils/firebase';
 import { Store } from 'react-notifications-component';
 
 function Home() {
     const isLogin = useRecoilValue(IsLogin);
+    const [paginationDisable, setPaginationDisable] = useState<boolean>(false);
     const [isBoardLoading, setIsBoardLoading] = useState(true);
     const [boardList, setBoardList] = useState<any>(null);
+    const [documents, setDocument] = useState<any>(null);
     const router = useRouter();
+    const pageSize = 10;
+    const [currentPage, serCurrentPage] = useState<number>(1);
 
     const getBoard = async () => {
         try {
-            const { docs } = await getDocs(collection(DB, 'board'));
-            const getList = docs.map((doc) => doc.data());
+            const initQuery = query(collection(DB, 'board'), orderBy('created', 'desc'), limit(pageSize));
+            const documentSnapshots = await getDocs(initQuery);
+
+            const getList = documentSnapshots.docs.map((doc) => doc.data());
+
             setBoardList(getList.length ? getList : null);
+            setDocument(documentSnapshots.docs);
             setIsBoardLoading(false);
+        } catch (error) {
+            Store.addNotification({
+                title: '오류',
+                message: '오류가 발생하였습니다.',
+                type: 'danger',
+                insert: 'top',
+                container: 'top-left',
+                animationIn: ['animate__animated', 'animate__fadeIn'],
+                animationOut: ['animate__animated', 'animate__fadeOut'],
+                dismiss: {
+                    duration: 5000,
+                },
+            });
+        }
+    };
+
+    const pagination = async (action: string, item: any) => {
+        try {
+            let getQuery = null;
+            let page = currentPage;
+            if (action === 'next') {
+                getQuery = query(collection(DB, 'board'), orderBy('created', 'desc'), startAfter(item), limit(pageSize));
+                page += 1;
+            } else {
+                getQuery = query(collection(DB, 'board'), orderBy('created', 'desc'), endAt(item), limitToLast(pageSize));
+                page -= 1;
+            }
+
+            if (getQuery) {
+                const documentSnapshots = await getDocs(getQuery);
+
+                if (action === 'next' && documentSnapshots.empty) {
+                    return;
+                }
+
+                if (documentSnapshots.size < 10) {
+                    setPaginationDisable(true);
+                } else {
+                    setPaginationDisable(false);
+                }
+
+                const getList = documentSnapshots.docs.map((doc) => doc.data());
+
+                setBoardList(getList.length ? getList : null);
+                setDocument(documentSnapshots.docs);
+                setIsBoardLoading(false);
+                serCurrentPage(page);
+            }
         } catch (error) {
             Store.addNotification({
                 title: '오류',
@@ -118,6 +176,23 @@ function Home() {
                     )}
 
                 </BoardGroup>
+                <Pagination>
+                    <PageButton
+                        type="button"
+                        onClick={() => pagination('prev', documents[0])}
+                        disabled={currentPage === 1}
+                    >
+                        이전
+                    </PageButton>
+                    <CurrentPage>{currentPage}</CurrentPage>
+                    <PageButton
+                        type="button"
+                        onClick={() => pagination('next', documents[documents.length - 1])}
+                        disabled={paginationDisable}
+                    >
+                        다음
+                    </PageButton>
+                </Pagination>
             </Section>
         </Container>
     );
@@ -203,6 +278,36 @@ const BoardEmpty = styled.div`
     font-weight: bold;
     border-top: 1px solid #C8CDD2;
     border-bottom: 1px solid #C8CDD2;
+`;
+
+const Pagination = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+`;
+
+const PageButton = styled.button`
+    border: 0;
+    background-color: rgb(0, 5, 40);
+    height: 38px;
+    width: 100px;
+    border-radius: 8px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    &:disabled {
+        background-color: #C8CDD2;
+    }
+`;
+
+const CurrentPage = styled.div`
+    font-size: 16px;
+    margin: 0 20px;
+    font-weight: bold;
 `;
 
 export default Home;

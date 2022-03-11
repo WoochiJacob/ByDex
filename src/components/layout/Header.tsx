@@ -33,20 +33,6 @@ function Header() {
                                 로그아웃
                             </Menu>
                         )}
-                        {!isLogin && (
-                            <>
-                                <Menu>
-                                    <Link href="/login">
-                                        로그인
-                                    </Link>
-                                </Menu>
-                                <Menu>
-                                    <Link href="/join">
-                                        회원가입
-                                    </Link>
-                                </Menu>
-                            </>
-                        )}
                     </MenuGroup>
                 </UserInfo>
             </Container>

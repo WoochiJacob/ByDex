@@ -60,7 +60,7 @@ function Login() {
 
     return (
         <Container>
-            <Title>로그인</Title>
+            <Title>BY DEX 로그인</Title>
             <Button
                 type="button"
                 onClick={() => googleLogin('google')}
@@ -74,7 +74,7 @@ function Login() {
 const Container = styled.div`
     width: 600px;
     margin: 0 auto;
-    padding-top: 120px;
+    padding-top: 140px;
 `;
 
 const Title = styled.div`
@@ -86,6 +86,16 @@ const Title = styled.div`
 const Button = styled.button`
     font-size: 16px;
     margin-bottom: 10px;
+    width: 100%;
+    border: 1px solid #C8CDD2;
+    background-color: #fff;
+    border-radius: 8px;
+    height: 50px;
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: underline;
+    }
 `;
 
 export default Login;
