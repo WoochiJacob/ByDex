@@ -13,6 +13,8 @@ import {
 import { DB } from '@utils/firebase';
 import { Store } from 'react-notifications-component';
 
+import Mainvisual from '@img/bg.png';
+
 function Home() {
     const isLogin = useRecoilValue(IsLogin);
     const [paginationDisable, setPaginationDisable] = useState<boolean>(false);
@@ -115,6 +117,8 @@ function Home() {
 
     return (
         <Container>
+            <MainvisualImage src={Mainvisual.src} />
+
             <Section>
                 <TitleContain>
                     <Title>게시판</Title>
@@ -199,11 +203,12 @@ function Home() {
 }
 
 const Container = styled.section`
-    width: 1280px;
-    margin: 0 auto;
+    width: 100%;
 `;
 
 const Section = styled.section`
+    width: 1280px;
+    margin: 0 auto;
     margin-top: 60px;
 `;
 
@@ -308,6 +313,10 @@ const CurrentPage = styled.div`
     font-size: 16px;
     margin: 0 20px;
     font-weight: bold;
+`;
+
+const MainvisualImage = styled('img')`
+    width: 100%;
 `;
 
 export default Home;
