@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import Link from 'next/link';
+import LogSvg from '@img/bydex_logo.svg';
 
 function Footer() {
     return (
@@ -12,13 +13,18 @@ function Footer() {
                             href="/"
                             passHref
                         >
-                            <Logo>BY DEX</Logo>
+                            <Logo src={LogSvg.src} />
                         </Link>
 
                         <TermBox>
-                            <TermText>TERMS OF SERVICE</TermText>
                             <TermText>
-                                PRIVACY POLICY
+                                <Link href="/company/terms">TERMS OF SERVICE</Link>
+
+                            </TermText>
+                            <TermText>
+                                <Link href="/company/policy">
+                                    PRIVACY POLICY
+                                </Link>
                             </TermText>
                         </TermBox>
                     </SiteMap>
@@ -73,13 +79,9 @@ const Section = styled.footer`
     margin: 0 auto;
 `;
 
-const Logo = styled.div`
-    font-size: 24px;
-    font-weight: bold;
+const Logo = styled('img')`
+    width: 120px;
     cursor: pointer;
-    color: rgb(0, 5, 40);
-    flex-basis: 200px;
-    margin-right: 20px;
 `;
 
 const Navigarion = styled.div`
@@ -106,13 +108,15 @@ const Desc = styled.span`
 
 const SiteMap = styled.div`
     display: flex;
+    align-items: flex-start;
     flex: 1;
 `;
 
 const TermBox = styled.div`
-    flex-basis: 400px;
+    flex-basis: 130px;
     flex-direction: column;
     display: flex;
+    margin-left: 80px;
 `;
 
 const TermText = styled.span`

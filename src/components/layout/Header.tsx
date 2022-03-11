@@ -6,6 +6,8 @@ import styled from '@emotion/styled';
 import { IsLogin } from '@recoil/auth/auth';
 import { useRecoilValue } from 'recoil';
 
+import LogSvg from '@img/bydex_logo.svg';
+
 function Header() {
     // 로그인 여부 체크
     const isLogin = useRecoilValue<boolean | null>(IsLogin);
@@ -23,7 +25,7 @@ function Header() {
                         href="/"
                         passHref
                     >
-                        <Logo>BY DEX</Logo>
+                        <Logo src={LogSvg.src} />
                     </Link>
                 </Navigarion>
                 <UserInfo>
@@ -63,10 +65,8 @@ const Container = styled.header`
     justify-content: space-between;
 `;
 
-const Logo = styled.div`
-    font-size: 24px;
-    font-weight: bold;
-    color: rgb(0, 5, 40);
+const Logo = styled('img')`
+    width: 120px;
     cursor: pointer;
 `;
 

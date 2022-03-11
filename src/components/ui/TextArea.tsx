@@ -26,6 +26,7 @@ function TextArea({
             minLength={minLength}
             placeholder={placeholder}
             textHeight={height}
+            maxLength={1000}
         />
     );
 }

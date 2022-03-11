@@ -11,6 +11,7 @@ export interface IFormData {
     type: string,
     required: boolean,
     minLength: number,
+    maxLength: number,
     placeholder: string,
     items: IItem[] | null,
 }
@@ -23,6 +24,7 @@ export const FormData: IFormData[] = [
         type: 'text',
         required: true,
         minLength: 1,
+        maxLength: 1000000000,
         placeholder: '상품 카테고리 선택',
         items: [
             {
@@ -44,16 +46,18 @@ export const FormData: IFormData[] = [
         type: 'text',
         required: true,
         minLength: 1,
+        maxLength: 1000000000,
         placeholder: '제목(상품명)을 입력해 주세요.',
         items: null,
     },
     {
-        title: '판매 가격',
+        title: '가격',
         label: 'price',
         form: 'input',
         type: 'number',
         required: true,
         minLength: 1,
+        maxLength: 1000000000000,
         placeholder: '가격을 입력해 주세요.',
         items: null,
     },
@@ -64,6 +68,7 @@ export const FormData: IFormData[] = [
         type: 'number',
         required: true,
         minLength: 1,
+        maxLength: 1000000000,
         placeholder: '휴대폰 번호를 입력해주세요.',
         items: null,
     },
@@ -74,6 +79,7 @@ export const FormData: IFormData[] = [
         type: 'radio',
         required: true,
         minLength: 0,
+        maxLength: 1000000000,
         placeholder: '',
         items: [
             {
@@ -110,6 +116,7 @@ export const FormData: IFormData[] = [
         type: 'text',
         required: true,
         minLength: 1,
+        maxLength: 1000000000,
         placeholder: '제품에 대한 설명을 작성해 주세요.',
         items: null,
     },

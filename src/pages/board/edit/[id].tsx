@@ -181,8 +181,10 @@ function BoardNew() {
                                 label={data.label}
                                 required={data.required}
                                 minLength={data.minLength}
+                                maxLength={data.maxLength}
                                 type={data.type}
                                 placeholder={data.placeholder}
+                                setValue={setValue}
                             />
                         )}
 

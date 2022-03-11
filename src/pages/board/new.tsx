@@ -42,7 +42,7 @@ function BoardNew() {
         name: '삽니다.',
     }];
     const {
-        register, control, handleSubmit, formState: { isValid },
+        register, control, handleSubmit, setValue, formState: { isValid },
     } = useForm<BoardData>({
         mode: 'onChange',
     });
@@ -134,8 +134,10 @@ function BoardNew() {
                                 label={data.label}
                                 required={data.required}
                                 minLength={data.minLength}
+                                maxLength={data.maxLength}
                                 type={data.type}
                                 placeholder={data.placeholder}
+                                setValue={setValue}
                             />
                         )}
 
