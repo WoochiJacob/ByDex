@@ -111,12 +111,14 @@ const SiteMap = styled.div`
 
 const TermBox = styled.div`
     flex-basis: 400px;
+    flex-direction: column;
+    display: flex;
 `;
 
-const TermText = styled.div`
+const TermText = styled.span`
     cursor: pointer;
     margin-bottom: 10px;
-    
+    width: 130px;
 
     &:hover {
         text-decoration: underline;

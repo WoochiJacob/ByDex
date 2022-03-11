@@ -25,16 +25,28 @@ function Home() {
     const pageSize = 10;
     const [currentPage, serCurrentPage] = useState<number>(1);
 
-    const getBoard = async () => {
+    const getBoard = async (event:any) => {
         try {
-            const initQuery = query(collection(DB, 'board'), orderBy('created', 'desc'), limit(pageSize));
-            const documentSnapshots = await getDocs(initQuery);
+            let initQuery = null;
 
-            const getList = documentSnapshots.docs.map((doc) => doc.data());
+            if (event.target.value === 'max') {
+                initQuery = query(collection(DB, 'board'), orderBy('price', 'desc'), limit(pageSize));
+            } else if (event.target.value === 'min') {
+                initQuery = query(collection(DB, 'board'), orderBy('price', 'asc'), limit(pageSize));
+            } else {
+                initQuery = query(collection(DB, 'board'), orderBy('created', 'desc'), limit(pageSize));
+            }
 
-            setBoardList(getList.length ? getList : null);
-            setDocument(documentSnapshots.docs);
-            setIsBoardLoading(false);
+            if (initQuery) {
+                const documentSnapshots = await getDocs(initQuery);
+
+                const getList = documentSnapshots.docs.map((doc) => doc.data());
+
+                setBoardList(getList.length ? getList : null);
+                setDocument(documentSnapshots.docs);
+                setIsBoardLoading(false);
+                serCurrentPage(1);
+            }
         } catch (error) {
             Store.addNotification({
                 title: '오류',
@@ -108,7 +120,8 @@ function Home() {
     };
 
     useEffect(() => {
-        getBoard();
+        // eslint-disable-next-line no-restricted-globals
+        getBoard(event);
     }, []);
 
     if (!isLogin) {
@@ -122,7 +135,22 @@ function Home() {
             <Section>
                 <TitleContain>
                     <Title>게시판</Title>
-                    <NewBoard onClick={newBoard}>글쓰기</NewBoard>
+                    <ButtonWrap>
+                        <SelectBox>
+                            <Select
+                                onChange={getBoard}
+                            >
+                                <option
+                                    value=""
+                                >
+                                    최신순
+                                </option>
+                                <option value="max">고가순</option>
+                                <option value="min">저가순</option>
+                            </Select>
+                        </SelectBox>
+                        <NewBoard onClick={newBoard}>글쓰기</NewBoard>
+                    </ButtonWrap>
                 </TitleContain>
 
                 <BoardGroup>
@@ -317,6 +345,32 @@ const CurrentPage = styled.div`
 
 const MainvisualImage = styled('img')`
     width: 100%;
+`;
+
+const ButtonWrap = styled.div`
+    display: flex;
+    align-items: center;
+`;
+
+const SelectBox = styled.div`
+    margin-right: 20px;
+    
+`;
+
+const Select = styled.select`
+    -webkit-appearance: none;
+       -moz-appearance: none;
+            appearance: none;
+    width: 150px;
+    border: 1px solid #e6e6e6;
+    border-radius: 8px;
+    height: 38px;
+    padding: 0 15px;
+
+    &:focus, &:active, &:focus-visible {
+        border: 1px solid #e6e6e6;
+        outline: 0;
+    }
 `;
 
 export default Home;
