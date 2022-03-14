@@ -24,10 +24,12 @@ function Input({
         const { value } = event.target;
 
         if (label === 'price' || label === 'phone') {
-            const rgex = label === 'price' ? /[^1-9]/g : /[^0-9]/g;
+            const rgex = /[^0-9.]/g;
             const newValue = value.replace(rgex, '');
             setValue(label, newValue);
-        } else {
+        }
+
+        if (value.length === 1) {
             const newValue = value.replace(' ', '');
             setValue(label, newValue);
         }
