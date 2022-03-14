@@ -24,7 +24,8 @@ function Input({
         const { value } = event.target;
 
         if (label === 'price' || label === 'phone') {
-            const newValue = value.replace(/[^1-9]/g, '');
+            const rgex = label === 'price' ? /[^1-9]/g : /[^0-9]/g;
+            const newValue = value.replace(rgex, '');
             setValue(label, newValue);
         } else {
             const newValue = value.replace(' ', '');
