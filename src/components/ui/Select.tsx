@@ -24,7 +24,7 @@ function Select({
         <SelectStyled
             {...register(label, { required })}
         >
-            <option>{placeholder}</option>
+            <option value="">{placeholder}</option>
 
             {options.map((option: ISelectOptions) => (
                 <option

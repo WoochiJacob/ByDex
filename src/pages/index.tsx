@@ -27,14 +27,12 @@ function Home() {
 
     const getBoard = async (event:any) => {
         try {
-            let initQuery = null;
+            let initQuery = query(collection(DB, 'board'), orderBy('created', 'desc'), limit(pageSize));
 
-            if (event.target.value === 'max') {
+            if (event && event.target.value === 'max') {
                 initQuery = query(collection(DB, 'board'), orderBy('price', 'desc'), limit(pageSize));
-            } else if (event.target.value === 'min') {
+            } else if (event && event.target.value === 'min') {
                 initQuery = query(collection(DB, 'board'), orderBy('price', 'asc'), limit(pageSize));
-            } else {
-                initQuery = query(collection(DB, 'board'), orderBy('created', 'desc'), limit(pageSize));
             }
 
             if (initQuery) {
