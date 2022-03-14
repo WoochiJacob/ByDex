@@ -57,7 +57,7 @@ export const FormData: IFormData[] = [
         type: 'text',
         required: true,
         minLength: 1,
-        maxLength: 1000000000,
+        maxLength: 12,
         placeholder: '가격을 입력해 주세요.',
         items: null,
     },

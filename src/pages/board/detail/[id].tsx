@@ -429,6 +429,7 @@ const Price = styled.div`
     font-size: 20px; 
     color: rgb(53, 68, 180);
     font-weight: 900;
+    word-break: break-all;
 `;
 
 const TextDetail = styled.div`
@@ -512,6 +513,7 @@ const CommentUserName = styled.div`
 
 const Comment = styled.div`
     font-size: 14px;
+    word-break: break-all;
 `;
 
 const CommentTime = styled.div`

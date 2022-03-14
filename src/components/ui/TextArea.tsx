@@ -26,7 +26,7 @@ function TextArea({
             minLength={minLength}
             placeholder={placeholder}
             textHeight={height}
-            maxLength={1000}
+            maxLength={3000}
         />
     );
 }
@@ -38,6 +38,7 @@ const TextareaStyled = styled.textarea<{textHeight: number}>`
     height: ${(props) => `${props.textHeight}px`};
     padding: 20px 15px;
     font-family: "Noto Sans KR";
+    resize: none;
 
     &:focus, &:active, &:focus-visible {
         border: 1px solid #e6e6e6;

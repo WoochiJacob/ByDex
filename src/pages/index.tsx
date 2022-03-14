@@ -13,7 +13,7 @@ import {
 import { DB } from '@utils/firebase';
 import { Store } from 'react-notifications-component';
 
-import Mainvisual from '@img/bg.png';
+import Mainvisual from '@img/byDex.png';
 
 function Home() {
     const isLogin = useRecoilValue(IsLogin);
