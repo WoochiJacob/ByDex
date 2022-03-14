@@ -45,6 +45,9 @@ function BoardNew() {
         register, control, handleSubmit, setValue, formState: { isValid },
     } = useForm<BoardData>({
         mode: 'onChange',
+        defaultValues: {
+            coin: '비트코인(BTC)',
+        },
     });
 
     const onSubmit = async (data: BoardData) => {
