@@ -8,6 +8,7 @@ interface ITextArea {
     register: any;
     placeholder: string;
     height: number;
+    setValue: any;
 }
 function TextArea({
     register,
@@ -17,7 +18,17 @@ function TextArea({
     type,
     placeholder,
     height,
+    setValue,
 }: ITextArea) {
+    const onlyText = (event: any) => {
+        const { value } = event.target;
+
+        if (value.length === 1) {
+            const newValue = value.replace(' ', '');
+            setValue(label, newValue);
+        }
+    };
+
     return (
         <TextareaStyled
             {...register(label, { required, minLength })}
@@ -27,6 +38,7 @@ function TextArea({
             placeholder={placeholder}
             textHeight={height}
             maxLength={3000}
+            onInput={onlyText}
         />
     );
 }

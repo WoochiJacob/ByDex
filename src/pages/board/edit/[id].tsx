@@ -207,6 +207,7 @@ function BoardNew() {
                                 type={data.type}
                                 placeholder={data.placeholder}
                                 height={200}
+                                setValue={setValue}
                             />
                         )}
 

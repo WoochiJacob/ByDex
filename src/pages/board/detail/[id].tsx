@@ -297,6 +297,7 @@ function BoardDetail() {
                                 type="text"
                                 placeholder="내용을 적어주세요."
                                 height={100}
+                                setValue={setValue}
                             />
                         </TextAreaBox>
 
