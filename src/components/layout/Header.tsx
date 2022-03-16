@@ -6,7 +6,7 @@ import styled from '@emotion/styled';
 import { IsLogin } from '@recoil/auth/auth';
 import { useRecoilValue } from 'recoil';
 
-import LogSvg from '@img/bydex_logo.svg';
+import LogSvg from '@img/byswap_logo.svg';
 
 function Header() {
     // 로그인 여부 체크

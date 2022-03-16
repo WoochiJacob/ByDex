@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import Link from 'next/link';
-import LogSvg from '@img/bydex_logo.svg';
+import LogSvg from '@img/byswap_logo.svg';
 
 function Footer() {
     return (
@@ -32,7 +32,7 @@ function Footer() {
                     <CompanyInfo>
                         <InfoBox>
                             <Title>상호명: </Title>
-                            <Desc>바이덱스</Desc>
+                            <Desc>바이스왑</Desc>
                         </InfoBox>
                         <InfoBox>
                             <Title>대표자: </Title>
@@ -54,7 +54,7 @@ function Footer() {
                         </InfoBox>
 
                         <InfoBox>
-                            <CopyRight>COPYRIGHT ⓒ 2022 BYDEX All Rights Reserved.</CopyRight>
+                            <CopyRight>COPYRIGHT ⓒ 2022 BYSWAP All Rights Reserved.</CopyRight>
 
                         </InfoBox>
                     </CompanyInfo>

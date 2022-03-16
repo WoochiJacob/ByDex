@@ -60,7 +60,7 @@ function Login() {
 
     return (
         <Container>
-            <Title>BY DEX 로그인</Title>
+            <Title>BY SWAAP 로그인</Title>
             <Button
                 type="button"
                 onClick={() => googleLogin('google')}

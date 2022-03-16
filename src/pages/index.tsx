@@ -13,7 +13,7 @@ import {
 import { DB } from '@utils/firebase';
 import { Store } from 'react-notifications-component';
 
-import Mainvisual from '@img/byDex.png';
+import Mainvisual from '@img/bySwap_background.png';
 
 function Home() {
     const isLogin = useRecoilValue(IsLogin);
@@ -27,12 +27,14 @@ function Home() {
 
     const getBoard = async (event:any) => {
         try {
-            let initQuery = query(collection(DB, 'board'), orderBy('created', 'desc'), limit(pageSize));
+            let initQuery = query(collection(DB, 'board'), orderBy('price', 'desc'), limit(pageSize));
 
             if (event && event.target.value === 'max') {
                 initQuery = query(collection(DB, 'board'), orderBy('price', 'desc'), limit(pageSize));
             } else if (event && event.target.value === 'min') {
                 initQuery = query(collection(DB, 'board'), orderBy('price', 'asc'), limit(pageSize));
+            } else {
+                initQuery = query(collection(DB, 'board'), orderBy('created', 'desc'), limit(pageSize));
             }
 
             if (initQuery) {
